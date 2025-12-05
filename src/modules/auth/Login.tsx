@@ -3,7 +3,7 @@ import type { ILogin } from '../../interfaces/auth'
 import { useLogin } from '../../hooks/auth'
 import { useUser } from '../../hooks/useUser'
 import { useNavigate } from 'react-router-dom'
-
+import { LockOutlined, UserOutlined } from '@ant-design/icons'
 const Login = () => {
     const [form] = Form.useForm()
     const loginMutation = useLogin()
@@ -26,10 +26,10 @@ const Login = () => {
         <div className="space-y-4" >
             <Form form={form} layout="vertical" onFinish={onFinish}>
                 <Form.Item label="Email" name="email">
-                    <Input />
+                    <Input type="email" placeholder="Enter your email" prefix={<UserOutlined />} size="large"/>
                 </Form.Item>
                 <Form.Item label="Password" name="password">
-                    <Input />
+                    <Input type="password" placeholder="Enter your password" prefix={<LockOutlined />} size="large"/>
                 </Form.Item>
                 <Button type="primary" htmlType="submit" loading={loginMutation.isPending}>
                     Login

@@ -2,7 +2,7 @@ import { Button, Form, Input, message } from 'antd'
 import type { ISignup } from '../../interfaces/auth'
 import { useRegister } from '../../hooks/auth'
 import { useUser } from '../../hooks/useUser'
-
+import { LockOutlined, UserOutlined } from '@ant-design/icons'
 const Signup = () => {
     const [form] = Form.useForm()
     const registerMutation = useRegister()
@@ -25,16 +25,16 @@ const Signup = () => {
         <div className="space-y-4" >
             <Form form={form} layout="vertical" onFinish={onFinish}>
                 <Form.Item label="Name" name="name">
-                    <Input />
+                    <Input placeholder="Enter your name" prefix={<UserOutlined />} size="large"/>
                 </Form.Item>
                 <Form.Item label="Email" name="email">
-                    <Input />
+                    <Input placeholder="Enter your email" prefix={<UserOutlined />} size="large"/>
                 </Form.Item>
                 <Form.Item label="Password" name="password">
-                    <Input />
+                    <Input placeholder="Enter your password" prefix={<LockOutlined />} size="large"/>
                 </Form.Item>
                 <Form.Item label="Confirm Password" name="confirmPassword">
-                    <Input />
+                    <Input placeholder="Confirm your password" prefix={<LockOutlined />} size="large"/>
                 </Form.Item>
                 <Button type="primary" htmlType="submit" loading={registerMutation.isPending}>
                     Signup
