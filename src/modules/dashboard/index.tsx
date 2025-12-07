@@ -11,7 +11,7 @@ import {
 
 import { useUser } from "../../hooks/useUser";
 import { useLogout } from "../../hooks/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet, useLocation } from "react-router-dom";
 
 const { Header, Sider, Content } = Layout;
 
@@ -21,6 +21,15 @@ const Dashboard = () => {
   const { user, setUser } = useUser();
   const logoutMutation = useLogout();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const selectedKey = (() => {
+    const p = location.pathname;
+    if (p.startsWith("/dashboard/post") || p === "/post") return "3";
+    if (p.startsWith("/dashboard/role")) return "2";
+    if (p === "/dashboard" || p === "/dashboard/") return "1";
+    return "";
+  })();
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -44,39 +53,48 @@ const Dashboard = () => {
     <Layout style={{ minHeight: "100vh" }}>
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="demo-logo-vertical " />
-        <Menu
-          theme="dark"
-          mode="inline"
-          defaultSelectedKeys={["1"]}
-          items={[
-            {
-              key: "1",
-              icon: <UserOutlined />,
-              label: "User",
-            },
-            {
-              key: "2",
-              icon: <VideoCameraOutlined />,
-              label: "Role",
-            },
-            {
-              key: "3",
-              icon: <PlusOutlined />,
-              label: "Post",
-              onClick: () => navigate("/post"),
-            },
-            {
+        <div className="h-full flex flex-col justify-between">
+          <div>
+            <Menu
+              theme="dark"
+              mode="inline"
+              selectedKeys={[selectedKey]}
+              items={[
+                {
+                  key: "1",
+                  icon: <UserOutlined />,
+                  label: "User",
+                  onClick: () => navigate('/dashboard'),
+                },
+                {
+                  key: "2",
+                  icon: <VideoCameraOutlined />,
+                  label: "Role",
+                  onClick: () => navigate('/dashboard/role'),
+                },
+                {
+                  key: "3",
+                  icon: <PlusOutlined />,
+                  label: "Post",
+                  onClick: () => navigate("/dashboard/post"),
+                },
+              ]}
+            />
+          </div>
+
+          <div>
+            <Menu theme="dark" mode="inline" items={[{
               key: "4",
               icon: <UserOutlined />,
               label: "Logout",
               onClick: handleLogout,
-            },
-          ]}
-        />
+            }]} />
+          </div>
+        </div>
       </Sider>
 
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
+        <Header style={{ padding: 0, background: colorBgContainer }} className="flex justify-between">
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -87,6 +105,9 @@ const Dashboard = () => {
               height: 64,
             }}
           />
+          <span className="mr-4">
+            {user && (<span>Welcome, {user.data.name}!</span>)}
+          </span>
         </Header>
 
         <Content
@@ -98,7 +119,7 @@ const Dashboard = () => {
             borderRadius: borderRadiusLG,
           }}
         >
-          Content goes here...
+          <Outlet />
         </Content>
       </Layout>
     </Layout>
