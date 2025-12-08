@@ -45,10 +45,10 @@ const Signup = () => {
                     <Input placeholder="Enter your email" prefix={<UserOutlined />} size="large" />
                 </Form.Item>
                 <Form.Item label="Password" name="password">
-                    <Input placeholder="Enter your password" prefix={<LockOutlined />} size="large" />
+                    <Input.Password placeholder="Enter your password" prefix={<LockOutlined />} size="large" />
                 </Form.Item>
                 <Form.Item label="Confirm Password" name="confirmPassword">
-                    <Input placeholder="Confirm your password" prefix={<LockOutlined />} size="large" />
+                    <Input.Password placeholder="Confirm your password" prefix={<LockOutlined />} size="large" />
                 </Form.Item>
                 <Button type="primary" htmlType="submit" loading={registerMutation.isPending}>
                     Signup

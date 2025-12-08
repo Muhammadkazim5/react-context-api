@@ -10,9 +10,6 @@ const User = () => {
     queryFn: () => getUsers(),
   });
   // console.log("data ", data?.data?.result?.items);
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
   if (error) {
     return <div>Error occurred: {(error as Error).message}</div>;
   }
@@ -59,7 +56,7 @@ const User = () => {
         <h1 className="text-2xl font-bold">Users</h1>
         <Button type="primary" onClick={() => navigate('/dashboard/users/create')}>Create User</Button>
       </div>
-      <Table dataSource={dataSource} columns={columns} rowKey="id" />
+      <Table loading={isLoading} dataSource={dataSource} columns={columns} rowKey="id" />
     </div>
   )
 }

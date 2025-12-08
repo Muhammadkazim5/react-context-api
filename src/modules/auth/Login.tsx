@@ -29,7 +29,7 @@ const Login = () => {
                     <Input type="email" placeholder="Enter your email" prefix={<UserOutlined />} size="large"/>
                 </Form.Item>
                 <Form.Item label="Password" name="password">
-                    <Input type="password" placeholder="Enter your password" prefix={<LockOutlined />} size="large"/>
+                    <Input.Password placeholder="Enter your password" prefix={<LockOutlined />} size="large" />
                 </Form.Item>
                 <Button type="primary" htmlType="submit" loading={loginMutation.isPending}>
                     Login

@@ -10,9 +10,6 @@ const Post = () => {
     queryFn: () => getPosts(),
   });
   console.log("data ", data?.data?.result?.items);
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
   if (error) {
     return <div>Error occurred: {(error as Error).message}</div>;
   }
@@ -54,7 +51,7 @@ const Post = () => {
         <h1 className="text-2xl font-bold">Posts</h1>
         <Button type="primary" onClick={() => navigate('/dashboard/posts/create')}>Create Post</Button>
       </div>
-      <Table dataSource={dataSource} columns={columns} rowKey="id" />
+      <Table loading={isLoading} dataSource={dataSource} columns={columns} rowKey="id" />
     </div>
   );
 };

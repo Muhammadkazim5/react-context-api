@@ -114,7 +114,7 @@ const Dashboard = () => {
             }}
           />
           <span className="mr-4">
-            {user && (<span>Welcome, {user.data.name}!</span>)}
+            {user && (<span className="text-lg">Welcome , <span className="text-blue-500 font-bold">{user.data.name}</span>!</span>)}
           </span>
         </Header>
 
