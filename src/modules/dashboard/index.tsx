@@ -6,6 +6,7 @@ import {
   MenuUnfoldOutlined,
   PlusOutlined,
   UserOutlined,
+  DashboardOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
 
@@ -27,7 +28,8 @@ const Dashboard = () => {
     const p = location.pathname;
     if (p.startsWith("/dashboard/post") || p === "/post") return "3";
     if (p.startsWith("/dashboard/role")) return "2";
-    if (p === "/dashboard" || p === "/dashboard/") return "1";
+    if (p === "/dashboard" || p === "/dashboard/") return "0";
+    if (p.startsWith("/dashboard/user")) return "1";
     return "";
   })();
 
@@ -54,17 +56,23 @@ const Dashboard = () => {
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="demo-logo-vertical " />
         <div className="h-full flex flex-col justify-between">
-          <div>
+          <div className="mt-4">
             <Menu
               theme="dark"
               mode="inline"
               selectedKeys={[selectedKey]}
               items={[
                 {
+                  key: "0",
+                  icon: <DashboardOutlined />,
+                  label: "Dashboard",
+                  onClick: () => navigate('/dashboard'),
+                },
+                {
                   key: "1",
                   icon: <UserOutlined />,
                   label: "User",
-                  onClick: () => navigate('/dashboard'),
+                  onClick: () => navigate('/dashboard/user'),
                 },
                 {
                   key: "2",
@@ -94,7 +102,7 @@ const Dashboard = () => {
       </Sider>
 
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }} className="flex justify-between">
+        <Header style={{ padding: 0, background: colorBgContainer }} className="flex justify-between shadow-md">
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}

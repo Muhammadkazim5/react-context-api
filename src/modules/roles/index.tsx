@@ -1,23 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
+import { getRoles } from "../../api/roles";
 import { Button, Table } from "antd";
-import { getPosts } from "../../api/post";
 import { useNavigate } from "react-router-dom";
 
-const Post = () => {
+const Role = () => {
   const navigate = useNavigate();
-  const { data, error, isLoading } = useQuery({
-    queryKey: ["posts"],
-    queryFn: () => getPosts(),
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['roles'],
+    queryFn: () => getRoles(),
   });
-  console.log("data ", data?.data?.result?.items);
+  // console.log("data ", data?.data?.result?.items);
   if (isLoading) {
     return <div>Loading...</div>;
   }
   if (error) {
     return <div>Error occurred: {(error as Error).message}</div>;
   }
-
-  const dataSource = data?.data?.result?.items || [];
+  const dataSource = data?.data?.data?.items || [];
   const columns = [
     {
       title: "id",
@@ -25,15 +24,14 @@ const Post = () => {
       key: "id",
     },
     {
-      title: "title",
-      dataIndex: "title",
-      key: "title",
+      title: "name",
+      dataIndex: "name",
+      key: "name",
     },
-
     {
-      title: "content",
-      dataIndex: "content",
-      key: "content",
+      title: "description",
+      dataIndex: "description",
+      key: "description",
     },
     {
       title: "createdAt",
@@ -50,13 +48,13 @@ const Post = () => {
   ];
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Posts</h1>
-        <Button type="primary" onClick={() => navigate('/dashboard/posts/create')}>Create Post</Button>
+            <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Roles</h1>
+        <Button type="primary" onClick={() => navigate('/dashboard/roles/create')}>Create Role</Button>
       </div>
       <Table dataSource={dataSource} columns={columns} rowKey="id" />
     </div>
-  );
-};
+  )
+}
 
-export default Post;
+export default Role
