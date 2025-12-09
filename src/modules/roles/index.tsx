@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { getRoles } from "../../api/roles";
-import { Button, Table, Input } from "antd";
+import { Button, Table, Input, Col, Row, Modal, Form, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useDebounce } from "../../hooks/useDebounce"; // <-- add this import
+import { useDebounce } from "../../hooks/useDebounce";
 import { EditTwoTone, EyeTwoTone, DeleteTwoTone } from "@ant-design/icons";
+
 const Role = () => {
   const navigate = useNavigate();
 
@@ -18,10 +19,13 @@ const Role = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  // ⏳ Apply debounce (500ms)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form] = Form.useForm();
+
+  // Debounced Search
   const debouncedSearch = useDebounce(searchValue, 500);
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["roles", { page, pageSize, ...debouncedSearch }],
     queryFn: () =>
       getRoles({
@@ -45,7 +49,6 @@ const Role = () => {
           <div>ID</div>
           <Input
             type="number"
-            size="middle"
             value={searchValue.id}
             onChange={(e) =>
               setSearchValue({ ...searchValue, id: e.target.value })
@@ -62,7 +65,6 @@ const Role = () => {
         <div>
           <div>Name</div>
           <Input
-            size="middle"
             value={searchValue.name}
             onChange={(e) =>
               setSearchValue({ ...searchValue, name: e.target.value })
@@ -79,7 +81,6 @@ const Role = () => {
         <div>
           <div>Description</div>
           <Input
-            size="middle"
             value={searchValue.description}
             onChange={(e) =>
               setSearchValue({ ...searchValue, description: e.target.value })
@@ -96,8 +97,7 @@ const Role = () => {
         <div>
           <div>Created At</div>
           <Input
-            size="middle"
-            type="datetime-local"
+            type="date"
             value={searchValue.createdAt}
             onChange={(e) =>
               setSearchValue({ ...searchValue, createdAt: e.target.value })
@@ -110,27 +110,82 @@ const Role = () => {
     },
     {
       title: "Action",
-      dataIndex: "action",
       key: "action",
-      render: (value: number) => (
+      render: (_: any, record: any) => (
         <div className="flex gap-2">
-         <EditTwoTone twoToneColor="#52C41A" onClick={() => navigate(`/dashboard/roles/${value}`)} />
-         <EyeTwoTone onClick={() => navigate(`/dashboard/roles/${value}`)} />
-         <DeleteTwoTone twoToneColor="#FF4D4F" onClick={() => navigate(`/dashboard/roles/${value}`)} />
+          <EditTwoTone
+            twoToneColor="#52C41A"
+            onClick={() => navigate(`/dashboard/roles/edit/${record.id}`)}
+          />
+          <EyeTwoTone
+            onClick={() => navigate(`/dashboard/roles/view/${record.id}`)}
+          />
+          <DeleteTwoTone
+            twoToneColor="#FF4D4F"
+            onClick={() => navigate(`/dashboard/roles/delete/${record.id}`)}
+          />
         </div>
       ),
     },
   ];
 
+  // Modal Controls
+  const showModal = () => setIsModalOpen(true);
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    form.resetFields();
+  };
+
+  const handleSubmit = async (values: any) => {
+    console.log("Form values:", values);
+
+    // Call your create role API here
+    // await createRole(values);
+
+    message.success("Role created successfully!");
+
+    setIsModalOpen(false);
+    form.resetFields();
+
+    // Refresh roles list
+    refetch();
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Roles</h1>
-        <Button type="primary" onClick={() => navigate("/dashboard/roles/create")}>
+        <Button type="primary" onClick={showModal}>
           Create Role
         </Button>
       </div>
 
+      {/* Create Role Modal */}
+      <Modal
+        title="Create Role"
+        open={isModalOpen}
+        onCancel={handleCancel}
+        onOk={() => form.submit()}
+      >
+        <Form form={form} layout="vertical" onFinish={handleSubmit}>
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item label="Role Name" name="name">
+                <Input placeholder="Enter role name" />
+              </Form.Item>
+            </Col>
+
+            <Col span={24}>
+              <Form.Item label="Description" name="description" rules={[]}>
+                <Input.TextArea placeholder="Enter description" />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Modal>
+
+      {/* Roles Table */}
       <Table
         loading={isLoading}
         bordered

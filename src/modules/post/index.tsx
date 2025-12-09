@@ -3,11 +3,19 @@ import { Button, Table } from "antd";
 import { getPosts } from "../../api/post";
 import { useNavigate } from "react-router-dom";
 
+import { EditTwoTone, EyeTwoTone, DeleteTwoTone } from "@ant-design/icons";
+
 const Post = () => {
   const navigate = useNavigate();
   const { data, error, isLoading } = useQuery({
     queryKey: ["posts"],
-    queryFn: () => getPosts(),
+    queryFn: () =>
+      getPosts({
+        page: 1,
+        name: "",
+        pagesize: 10,
+        id: 0,
+      }),
   });
   console.log("data ", data?.data?.result?.items);
   if (error) {
@@ -20,6 +28,11 @@ const Post = () => {
       title: "id",
       dataIndex: "id",
       key: "id",
+    },
+    {
+      title: "User",
+      dataIndex: "user",
+      key: "user",
     },
     {
       title: "title",
@@ -36,22 +49,54 @@ const Post = () => {
       title: "createdAt",
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (date: string) =>date ? new Date(date).toLocaleDateString() : '-'
+      render: (date: string) =>
+        date ? new Date(date).toLocaleDateString() : "-",
     },
     {
       title: "updatedAt",
       dataIndex: "updatedAt",
       key: "updatedAt",
-      render: (date: string) =>date ? new Date(date).toLocaleDateString() : '-'
+      render: (date: string) =>
+        date ? new Date(date).toLocaleDateString() : "-",
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_: any, record: any) => (
+        <div className="flex gap-2">
+          <EditTwoTone
+            twoToneColor="#52C41A"
+            onClick={() => navigate(`/dashboard/posts/edit/${record.id}`)}
+          />
+          <EyeTwoTone
+            onClick={() => navigate(`/dashboard/posts/view/${record.id}`)}
+          />
+          <DeleteTwoTone
+            twoToneColor="#FF4D4F"
+            onClick={() => navigate(`/dashboard/posts/delete/${record.id}`)}
+          />
+        </div>
+      ),
     },
   ];
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Posts</h1>
-        <Button type="primary" onClick={() => navigate('/dashboard/posts/create')}>Create Post</Button>
+        <Button
+          type="primary"
+          onClick={() => navigate("/dashboard/posts/create")}
+        >
+          Create Post
+        </Button>
       </div>
-      <Table loading={isLoading} dataSource={dataSource} columns={columns} rowKey="id" />
+      <Table
+        loading={isLoading}
+        dataSource={dataSource}
+        columns={columns}
+        rowKey="id"
+        bordered
+      />
     </div>
   );
 };
