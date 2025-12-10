@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { createUser, deleteUser, getUsers } from "../../api/users";
 import { getRoles } from "../../api/roles";
 
@@ -23,12 +24,13 @@ import {
   DeleteTwoTone,
   UploadOutlined,
 } from "@ant-design/icons";
-
 const User = () => {
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
   const queryClient = useQueryClient();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
 
@@ -56,7 +58,7 @@ const User = () => {
         createdAt: "",
       }),
   });
-// console.log("roles",rolesData)
+  // console.log("roles",rolesData)
   if (error) {
     return <div>Error occurred: {(error as Error).message}</div>;
   }
@@ -106,7 +108,9 @@ const User = () => {
       render: (_: any, record: any) => (
         <div className="flex gap-2">
           <EditTwoTone twoToneColor="#52C41A" />
-          <EyeTwoTone />
+          <EyeTwoTone
+            onClick={() => navigate(`/dashboard/users/view/${record.id}`)}
+          />
 
           <Popconfirm
             title="Are you sure?"
@@ -128,37 +132,34 @@ const User = () => {
     form.resetFields();
   };
 
-const handleSubmit = async (values: any) => {
-  try {
-    const formData = new FormData();
+  const handleSubmit = async (values: any) => {
+    try {
+      const formData = new FormData();
 
-    formData.append("name", values.name);
-    formData.append("email", values.email);
-    formData.append("password", values.password || "123456"); 
+      formData.append("name", values.name);
+      formData.append("email", values.email);
+      formData.append("password", values.password || "123456");
 
-    // append roles array correctly
-    formData.append("roles", values.role);  // backend will convert number → array
+      // append roles array correctly
+      formData.append("roles", values.role); // backend will convert number → array
 
-    // append image file
-    if (values.image?.file) {
-      formData.append("image", values.image.file);
+      // append image file
+      if (values.image?.file) {
+        formData.append("image", values.image.file);
+      }
+
+      await createUser(formData); // MUST send FormData
+
+      message.success("User created successfully");
+
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setIsModalOpen(false);
+      form.resetFields();
+    } catch (error: any) {
+      const msg = error?.response?.data?.message || "Something went wrong!";
+      message.error(msg);
     }
-
-    await createUser(formData); // MUST send FormData
-
-    message.success("User created successfully");
-
-    queryClient.invalidateQueries(["users"]);
-    setIsModalOpen(false);
-    form.resetFields();
-  } catch (error: any) {
-    const msg =
-      error?.response?.data?.message || "Something went wrong!";
-    message.error(msg);
-  }
-};
-
-
+  };
 
   const handleDelete = async (id: number) => {
     try {

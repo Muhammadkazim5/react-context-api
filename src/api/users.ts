@@ -25,3 +25,8 @@ export const createUser = (payload: any) => {
 export const deleteUser = (payload: { id: number }) => {
   return http.delete(`/user/${payload.id}`);
 };
+
+// api/users.ts
+export const viewUser = (id: number) => {
+  return http.get(`/user/${id}`);
+};
