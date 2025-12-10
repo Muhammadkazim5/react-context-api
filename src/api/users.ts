@@ -1,18 +1,17 @@
 import http from "../utils/http";
 
-export const getUsers = (payload:{
-  page: Number;
+export const getUsers = (payload: {
+  page: number;
   pagesize: number;
-  id: number;
-  name: String;
-
+  id?: number;
+  name?: string;
 }) => {
-  return http.get(`/user?page=${payload?.page}&limit=${payload?.pagesize}`);
+  return http.get(`/user?page=${payload.page}&limit=${payload.pagesize}`);
 };
 
 
 
-
+// ...............Create User...............
 export const createUser = (payload: {
   name: string;
   email: string;
@@ -27,4 +26,9 @@ export const createUser = (payload: {
     
    
   });
+};
+
+//................ DELETE User.............
+export const deleteUser = (payload: { id: number }) => {
+  return http.delete(`/user/${payload.id}`);
 };
