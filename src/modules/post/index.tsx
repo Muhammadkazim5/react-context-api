@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, message, Popconfirm, Table } from "antd";
 import { deletePost, getPosts } from "../../api/post";
 import { useNavigate } from "react-router-dom";
@@ -7,7 +7,10 @@ import { EditTwoTone, EyeTwoTone, DeleteTwoTone } from "@ant-design/icons";
 
 const Post = () => {
   const navigate = useNavigate();
-  const { data, error, isLoading } = useQuery({
+  const queryClient = useQueryClient();
+
+  // Fetch posts
+  const { data, isLoading } = useQuery({
     queryKey: ["posts"],
     queryFn: () =>
       getPosts({
@@ -17,25 +20,21 @@ const Post = () => {
         id: 0,
       }),
   });
-  // console.log("data ", data?.data?.result?.items);
-  const deleteMutation = useMutation({
-    mutationFn: (id: number) => deletePost(id),
-    onSuccess: () => {
-      message.success("Post deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["posts"] }); // refresh posts
-    },
-    onError: () => {
-      message.error("Failed to delete post");
-    },
-  });
 
-  const handleDelete = (id: number) => {
-    deleteMutation.mutate(id);
+  // Delete post mutation
+  const handleDelete = async (id: number) => {
+    try {
+      await deletePost({ id });
+      message.success("post deleted successfully!");
+
+      queryClient.invalidateQueries({ queryKey: ["post"] });
+    } catch (err) {
+      message.error("Failed to delete");
+    }
   };
-  if (error) {
-    return <div>Error occurred: {(error as Error).message}</div>;
-  }
+
   const dataSource = data?.data?.result?.items || [];
+
   const columns = [
     {
       title: "id",
@@ -46,14 +45,13 @@ const Post = () => {
       title: "User",
       dataIndex: "user",
       key: "user",
-      render: (user: any) => user?.name || "-"
+      render: (user: any) => user?.name || "-",
     },
     {
       title: "title",
       dataIndex: "title",
       key: "title",
     },
-
     {
       title: "content",
       dataIndex: "content",
@@ -78,11 +76,12 @@ const Post = () => {
           <EyeTwoTone
             onClick={() => navigate(`/dashboard/posts/view/${record.id}`)}
           />
-           <Popconfirm
-            title="Are you sure you want to delete this post?"
+
+          <Popconfirm
+            title="Are you sure?"
             onConfirm={() => handleDelete(record.id)}
-            okText="Yes"
-            cancelText="No"
+            okText="yes"
+            cancelText="no"
           >
             <DeleteTwoTone twoToneColor="#FF4D4F" />
           </Popconfirm>
@@ -90,17 +89,17 @@ const Post = () => {
       ),
     },
   ];
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Posts</h1>
-        <Button
-          type="primary"
-          onClick={() => navigate("create")}
-        >
+
+        <Button type="primary" onClick={() => navigate("create")}>
           Create Post
         </Button>
       </div>
+
       <Table
         loading={isLoading}
         dataSource={dataSource}
