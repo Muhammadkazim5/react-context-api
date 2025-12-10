@@ -12,20 +12,13 @@ export const getUsers = (payload: {
 
 
 // ...............Create User...............
-export const createUser = (payload: {
-  name: string;
-  email: string;
-  password: string;
- 
- 
-}) => {
-  return http.post("/user", {
-    name: payload.name,
-    email: payload.email,
-    password: payload.password,
-    
-   
-  });
+export const createUser = (payload: any) => {
+  // Send payload as-is. The UI will construct the shape the backend expects
+  return http.post("/user", payload,
+    {
+    headers: { "Content-Type": "multipart/form-data" },
+  }
+  );
 };
 
 //................ DELETE User.............

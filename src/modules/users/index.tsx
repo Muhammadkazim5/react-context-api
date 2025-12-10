@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createUser, deleteUser, getUsers } from "../../api/users";
+import { getRoles } from "../../api/roles";
 
 import {
   Button,
@@ -42,6 +43,20 @@ const User = () => {
       }),
   });
 
+  // fetch roles for the role select so we can send role id in payload
+  const { data: rolesData, isLoading: rolesLoading } = useQuery({
+    queryKey: ["roles"],
+    queryFn: () =>
+      getRoles({
+        page: 1,
+        pageSize: 100,
+        id: "",
+        name: "",
+        description: "",
+        createdAt: "",
+      }),
+  });
+// console.log("roles",rolesData)
   if (error) {
     return <div>Error occurred: {(error as Error).message}</div>;
   }
@@ -113,19 +128,37 @@ const User = () => {
     form.resetFields();
   };
 
-  const handleSubmit = async (values: any) => {
-    try {
-      await createUser(values);
-      message.success("User created successfully!");
+const handleSubmit = async (values: any) => {
+  try {
+    const formData = new FormData();
 
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+    formData.append("name", values.name);
+    formData.append("email", values.email);
+    formData.append("password", values.password || "123456"); 
 
-      setIsModalOpen(false);
-      form.resetFields();
-    } catch (error: any) {
-      message.error(error?.response?.data?.message || "Something went wrong!");
+    // append roles array correctly
+    formData.append("roles", values.role);  // backend will convert number → array
+
+    // append image file
+    if (values.image?.file) {
+      formData.append("image", values.image.file);
     }
-  };
+
+    await createUser(formData); // MUST send FormData
+
+    message.success("User created successfully");
+
+    queryClient.invalidateQueries(["users"]);
+    setIsModalOpen(false);
+    form.resetFields();
+  } catch (error: any) {
+    const msg =
+      error?.response?.data?.message || "Something went wrong!";
+    message.error(msg);
+  }
+};
+
+
 
   const handleDelete = async (id: number) => {
     try {
@@ -201,13 +234,27 @@ const User = () => {
                 name="role"
                 rules={[{ required: true, message: "Select a role" }]}
               >
-                <Select placeholder="Select role">
-                  <Select.Option value="admin">Admin</Select.Option>
-                  <Select.Option value="manager">Manager</Select.Option>
-                  <Select.Option value="user">User</Select.Option>
+                <Select placeholder="Select role" loading={rolesLoading}>
+                  {/* Map roles from API; make sure option value is the numeric id */}
+                  {rolesData?.data?.data?.items?.map((r: any) => (
+                    <Select.Option key={r.id} value={r.id}>
+                      {r.name}
+                    </Select.Option>
+                  ))}
                 </Select>
               </Form.Item>
             </Col>
+
+            {/* Password - required by createUser API */}
+            {/* <Col span={12}>
+              <Form.Item
+                label="Password"
+                name="password"
+                rules={[{ required: true, message: "Enter a password" }]}
+              >
+                <Input.Password placeholder="Enter password" />
+              </Form.Item>
+            </Col> */}
 
             <Col span={12}>
               <Form.Item label="Image" name="image">
