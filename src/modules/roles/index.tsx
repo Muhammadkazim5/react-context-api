@@ -20,9 +20,10 @@ const Role = () => {
   const [pageSize, setPageSize] = useState(10);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [form] = Form.useForm();
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingRole, setEditingRole] = useState<any>(null);
 
-  // Debounced Search
+  const [form] = Form.useForm();
   const debouncedSearch = useDebounce(searchValue, 500);
 
   const { data, isLoading, error, refetch } = useQuery({
@@ -115,11 +116,18 @@ const Role = () => {
         <div className="flex gap-2">
           <EditTwoTone
             twoToneColor="#52C41A"
-            onClick={() => navigate(`/dashboard/roles/edit/${record.id}`)}
+            onClick={() => {
+              setIsEditMode(true);
+              setEditingRole(record);
+              form.setFieldsValue(record);
+              setIsModalOpen(true);
+            }}
           />
+
           <EyeTwoTone
             onClick={() => navigate(`/dashboard/roles/view/${record.id}`)}
           />
+
           <DeleteTwoTone
             twoToneColor="#FF4D4F"
             onClick={() => navigate(`/dashboard/roles/delete/${record.id}`)}
@@ -129,26 +137,31 @@ const Role = () => {
     },
   ];
 
-  // Modal Controls
-  const showModal = () => setIsModalOpen(true);
-
+  // Modal Cancel
   const handleCancel = () => {
     setIsModalOpen(false);
     form.resetFields();
+    setIsEditMode(false);
+    setEditingRole(null);
   };
 
+  // Submit (Create or Update)
   const handleSubmit = async (values: any) => {
-    console.log("Form values:", values);
-
-    // Call your create role API here
-    // await createRole(values);
-
-    message.success("Role created successfully!");
+    if (isEditMode) {
+      console.log("Updating role...", editingRole?.id, values);
+      // await updateRole(editingRole.id, values);
+      message.success("Role updated successfully!");
+    } else {
+      console.log("Creating role...", values);
+      // await createRole(values);
+      message.success("Role created successfully!");
+    }
 
     setIsModalOpen(false);
     form.resetFields();
+    setIsEditMode(false);
+    setEditingRole(null);
 
-    // Refresh roles list
     refetch();
   };
 
@@ -156,14 +169,22 @@ const Role = () => {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Roles</h1>
-        <Button type="primary" onClick={showModal}>
+        <Button
+          type="primary"
+          onClick={() => {
+            setIsEditMode(false);
+            setEditingRole(null);
+            form.resetFields();
+            setIsModalOpen(true);
+          }}
+        >
           Create Role
         </Button>
       </div>
 
-      {/* Create Role Modal */}
+      {/* Modal */}
       <Modal
-        title="Create Role"
+        title={isEditMode ? "Edit Role" : "Create Role"}
         open={isModalOpen}
         onCancel={handleCancel}
         onOk={() => form.submit()}
@@ -177,7 +198,7 @@ const Role = () => {
             </Col>
 
             <Col span={24}>
-              <Form.Item label="Description" name="description" rules={[]}>
+              <Form.Item label="Description" name="description">
                 <Input.TextArea placeholder="Enter description" />
               </Form.Item>
             </Col>
@@ -185,7 +206,7 @@ const Role = () => {
         </Form>
       </Modal>
 
-      {/* Roles Table */}
+      {/* Table */}
       <Table
         loading={isLoading}
         bordered
