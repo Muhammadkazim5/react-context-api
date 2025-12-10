@@ -1,10 +1,35 @@
 import http from "../utils/http";
 
 export const getPosts = (payload:{
-  page: Number;
-  name: String;
-  pagesize: Number;
-  id: Number;
+  page: number;
+  name: string;
+  pagesize: number;
+  id: number;
 }) => {
 
   return http.get(`/post?page=${payload?.page}&limit=${payload?.pagesize}`);}
+
+  export const createPost = (payload : {
+    title : string ;
+    content : string ;
+    user : number
+  }) => {
+    return http.post(`/post`,payload)
+  }
+  export const getPostById = (id: number) => {
+    return http.get(`/post/${id}`);
+  };
+  export const updatePost = (
+    id: number,
+    payload: { 
+      title: string; 
+      content: string; 
+      user: number; 
+    }
+  ) => {
+    return http.patch(`/post/${id}`, payload);
+  };
+
+  export const deletePost= (id: number)=>{
+    return http.delete(`/post/${id}`);
+  }

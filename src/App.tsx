@@ -6,7 +6,8 @@ import DashboardHome from "./modules/dashboard/Home";
 import Post from "./modules/post";
 import User from "./modules/users";
 import Role from "./modules/roles";
-
+import ModifyPost from './modules/post/modify/index'
+import ViewPost from "./modules/post/view";
 function App() {
   return (
     <BrowserRouter>
@@ -17,6 +18,9 @@ function App() {
           <Route path="post" element={<Post />} />
           <Route path="role" element={<Role />} />
           <Route path="user" element={<User />} />
+          <Route path="post/create" element={<ModifyPost/>}/>
+          <Route path="posts/edit/:id" element={<ModifyPost />} />
+          <Route path="posts/view/:id" element={<ViewPost/>}/>
         </Route>
       </Routes>
     </BrowserRouter>

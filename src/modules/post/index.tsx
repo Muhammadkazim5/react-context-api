@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import { Button, Table } from "antd";
-import { getPosts } from "../../api/post";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Button, message, Popconfirm, Table } from "antd";
+import { deletePost, getPosts } from "../../api/post";
 import { useNavigate } from "react-router-dom";
 
 import { EditTwoTone, EyeTwoTone, DeleteTwoTone } from "@ant-design/icons";
@@ -17,11 +17,24 @@ const Post = () => {
         id: 0,
       }),
   });
-  console.log("data ", data?.data?.result?.items);
+  // console.log("data ", data?.data?.result?.items);
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => deletePost(id),
+    onSuccess: () => {
+      message.success("Post deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["posts"] }); // refresh posts
+    },
+    onError: () => {
+      message.error("Failed to delete post");
+    },
+  });
+
+  const handleDelete = (id: number) => {
+    deleteMutation.mutate(id);
+  };
   if (error) {
     return <div>Error occurred: {(error as Error).message}</div>;
   }
-
   const dataSource = data?.data?.result?.items || [];
   const columns = [
     {
@@ -33,6 +46,7 @@ const Post = () => {
       title: "User",
       dataIndex: "user",
       key: "user",
+      render: (user: any) => user?.name || "-"
     },
     {
       title: "title",
@@ -53,13 +67,6 @@ const Post = () => {
         date ? new Date(date).toLocaleDateString() : "-",
     },
     {
-      title: "updatedAt",
-      dataIndex: "updatedAt",
-      key: "updatedAt",
-      render: (date: string) =>
-        date ? new Date(date).toLocaleDateString() : "-",
-    },
-    {
       title: "Action",
       key: "action",
       render: (_: any, record: any) => (
@@ -71,10 +78,14 @@ const Post = () => {
           <EyeTwoTone
             onClick={() => navigate(`/dashboard/posts/view/${record.id}`)}
           />
-          <DeleteTwoTone
-            twoToneColor="#FF4D4F"
-            onClick={() => navigate(`/dashboard/posts/delete/${record.id}`)}
-          />
+           <Popconfirm
+            title="Are you sure you want to delete this post?"
+            onConfirm={() => handleDelete(record.id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <DeleteTwoTone twoToneColor="#FF4D4F" />
+          </Popconfirm>
         </div>
       ),
     },
@@ -85,7 +96,7 @@ const Post = () => {
         <h1 className="text-2xl font-bold">Posts</h1>
         <Button
           type="primary"
-          onClick={() => navigate("/dashboard/posts/create")}
+          onClick={() => navigate("create")}
         >
           Create Post
         </Button>
