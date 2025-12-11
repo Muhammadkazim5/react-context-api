@@ -17,6 +17,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />}>
           <Route index element={<DashboardHome />} />
           <Route path="post" element={<Post />} />
+          <Route path="post/view/:id" element={<ModifyPost />} />
           <Route path="role" element={<Role />} />
           <Route path="user" element={<User />} />
           <Route path="users/view/:id" element={<ViewUser />} />
