@@ -26,7 +26,19 @@ export const deleteUser = (payload: { id: number }) => {
   return http.delete(`/user/${payload.id}`);
 };
 
-// api/users.ts
+// .................get user................
 export const viewUser = (id: number) => {
   return http.get(`/user/${id}`);
 };
+
+export const updateUser = (id: number, payload: FormData) => {
+  return http.patch(`/user/${id}`, payload, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+
+
+

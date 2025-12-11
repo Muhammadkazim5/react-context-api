@@ -1,23 +1,25 @@
 import { useEffect } from "react";
 import { Form, Input, Button, Card, message, Row, Col, Select } from "antd";
+import { useEffect, useState } from "react";
+import { Form, Input, Button, Modal, message, Row, Col } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createPost, updatePost, getPostById } from "../../../api/post";
 import type { IPost } from "../../../interfaces/post";
 import { getUsers } from "../../../api/users";
 
-
 const ModifyPost = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
-  const { id } = useParams(); // If exists → Edit Mode
+  const { id } = useParams<{ id: string }>();
+  const [open, setOpen] = useState(true); // Modal always opens when page loads
 
   const isEdit = !!id;
 
-  // FETCH POST IN EDIT MODE
-  const { data: postData, isLoading } = useQuery({
+  // Fetch single post in edit mode
+  const { data: postData } = useQuery({
     queryKey: ["post", id],
-    queryFn: () => getPostById(id),
+    queryFn: () => getPostById(Number(id)),
     enabled: isEdit,
   });
   // FETCH USERS FOR SELECT
@@ -32,22 +34,23 @@ const ModifyPost = () => {
 // console.log('edit values',postData)
   // SUBMIT HANDLERS
   const createMutation = useMutation({
-    mutationFn: (data : IPost) => createPost(data),
+    mutationFn: (data: IPost) => createPost(data),
     onSuccess: () => {
       message.success("Post created successfully");
       navigate("/dashboard/post");
     },
   });
 
+  // Update post
   const updateMutation = useMutation({
-    mutationFn: (data: IPost) => updatePost(id, data),
+    mutationFn: (data: IPost) => updatePost(Number(id), data),
     onSuccess: () => {
       message.success("Post updated successfully");
       navigate("/dashboard/post");
     },
   });
 
-  // SET INITIAL VALUES WHEN EDITING
+  // Set initial values when editing
   useEffect(() => {
     if (postData?.data?.data) {
       const p = postData.data.data;
@@ -59,16 +62,20 @@ const ModifyPost = () => {
     }
   }, [postData]);
 
-  const onSubmit = (values) => {
+  // Submit
+  const onSubmit = (values: Partial<IPost>) => {
     if (isEdit) {
-      updateMutation.mutate(values);
+      updateMutation.mutate(values as IPost);
     } else {
-      createMutation.mutate(values);
+      createMutation.mutate(values as IPost);
     }
   };
-  if(isLoading){
-    return <div>loading...</div>
-  }
+
+  const handleCancel = () => {
+    setOpen(false);
+    navigate("/dashboard/posts");
+  };
+
   return (
     <div className="flex justify-center items-center ">
     <Card className="max-w-7xl mx-auto mt-8 shadow-md">
@@ -128,16 +135,50 @@ const ModifyPost = () => {
     </Col>
   </Row>  
         <Button
-          loading={createMutation.isPending || updateMutation.isPending}
+          key="submit"
           type="primary"
-          htmlType="submit"
-          block
+          loading={createMutation.isPending || updateMutation.isPending}
+          onClick={() => form.submit()}
         >
           {isEdit ? "Update Post" : "Create Post"}
-        </Button>
+        </Button>,
+      ]}
+    >
+      <Form form={form} layout="vertical" onFinish={onSubmit}>
+        <Row gutter={24}>
+          <Col span={24}>
+            <Form.Item
+              label="Title"
+              name="title"
+              rules={[{ required: true, message: "Enter Title" }]}
+            >
+              <Input placeholder="Enter post title" />
+            </Form.Item>
+          </Col>
+
+          {isEdit && (
+            <Col span={24}>
+              <Form.Item label="User">
+                <Input
+                  value={postData?.data?.data?.user?.name || ""}
+                  disabled
+                />
+              </Form.Item>
+            </Col>
+          )}
+
+          <Col span={24}>
+            <Form.Item
+              label="Content"
+              name="content"
+              rules={[{ required: true, message: "Enter content" }]}
+            >
+              <Input.TextArea rows={4} placeholder="Enter content" />
+            </Form.Item>
+          </Col>
+        </Row>
       </Form>
-    </Card>
-    </div>
+    </Modal>
   );
 };
 

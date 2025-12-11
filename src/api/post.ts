@@ -30,6 +30,8 @@ export const getPosts = (payload:{
     return http.patch(`/post/${id}`, payload);
   };
 
-  export const deletePost= (id: number)=>{
-    return http.delete(`/post/${id}`);
+  export const deletePost = (payload: {id: number}) => {
+    return http.delete(`/post/${payload.id}`);
   }
+
+ 
