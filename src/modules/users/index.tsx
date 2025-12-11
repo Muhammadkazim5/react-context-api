@@ -24,6 +24,7 @@ import {
   DeleteTwoTone,
   UploadOutlined,
 } from "@ant-design/icons";
+import UpdateUser from "./Modify";
 const User = () => {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
@@ -33,6 +34,8 @@ const User = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
+  const [editingUser, setEditingUser] = useState(null);
+  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["users", page, pageSize],
@@ -107,7 +110,13 @@ const User = () => {
       key: "ction",
       render: (_: any, record: any) => (
         <div className="flex gap-2">
-          <EditTwoTone twoToneColor="#52C41A" />
+          <EditTwoTone
+            twoToneColor="#52C41A"
+            onClick={() => {
+              setEditingUser(record); // send user to update modal
+              setIsUpdateOpen(true); // open modal
+            }}
+          />
           <EyeTwoTone
             onClick={() => navigate(`/dashboard/users/view/${record.id}`)}
           />
@@ -195,6 +204,12 @@ const User = () => {
             setPageSize(newPageSize);
           },
         }}
+      />
+      <UpdateUser
+        open={isUpdateOpen}
+        onClose={() => setIsUpdateOpen(false)}
+        user={editingUser}
+        roles={rolesData?.data?.data?.items || []}
       />
 
       {/* Create User Modal */}

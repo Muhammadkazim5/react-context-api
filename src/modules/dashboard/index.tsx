@@ -26,7 +26,7 @@ const Dashboard = () => {
 
   const selectedKey = (() => {
     const p = location.pathname;
-    if (p.startsWith("/dashboard/post") || p === "/post") return "3";
+    if (p.startsWith("/dashboard/post")) return "3";
     if (p.startsWith("/dashboard/role")) return "2";
     if (p === "/dashboard" || p === "/dashboard/") return "0";
     if (p.startsWith("/dashboard/user")) return "1";
@@ -34,7 +34,7 @@ const Dashboard = () => {
   })();
 
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { colorBgContainer },
   } = theme.useToken();
 
   const handleLogout = () => {
@@ -52,9 +52,21 @@ const Dashboard = () => {
   };
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div className="demo-logo-vertical " />
+    <Layout style={{ height: "100vh", overflow: "hidden" }}>
+      {/* FIXED SIDEBAR */}
+      <Sider
+        trigger={null}
+        collapsible
+        collapsed={collapsed}
+        style={{
+          position: "fixed",
+          left: 0,
+          top: 0,
+          height: "100vh",
+          overflowY: "auto",
+          zIndex: 100,
+        }}
+      >
         <div className="h-full flex flex-col justify-between">
           <div className="mt-4">
             <Menu
@@ -66,19 +78,19 @@ const Dashboard = () => {
                   key: "0",
                   icon: <DashboardOutlined />,
                   label: "Dashboard",
-                  onClick: () => navigate('/dashboard'),
+                  onClick: () => navigate("/dashboard"),
                 },
                 {
                   key: "1",
                   icon: <UserOutlined />,
                   label: "User",
-                  onClick: () => navigate('/dashboard/user'),
+                  onClick: () => navigate("/dashboard/user"),
                 },
                 {
                   key: "2",
                   icon: <VideoCameraOutlined />,
                   label: "Role",
-                  onClick: () => navigate('/dashboard/role'),
+                  onClick: () => navigate("/dashboard/role"),
                 },
                 {
                   key: "3",
@@ -90,19 +102,44 @@ const Dashboard = () => {
             />
           </div>
 
-          <div>
-            <Menu theme="dark" mode="inline" items={[{
-              key: "4",
-              icon: <UserOutlined />,
-              label: "Logout",
-              onClick: handleLogout,
-            }]} />
-          </div>
+          <Menu
+            theme="dark"
+            mode="inline"
+            items={[
+              {
+                key: "4",
+                icon: <UserOutlined />,
+                label: "Logout",
+                onClick: handleLogout,
+              },
+            ]}
+          />
         </div>
       </Sider>
 
-      <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }} className="flex justify-between shadow-md">
+      {/* MAIN AREA */}
+      <Layout
+        style={{
+          marginLeft: collapsed ? 80 : 200,
+          height: "100vh",
+          transition: "all 0.2s",
+        }}
+      >
+        {/* FIXED HEADER */}
+        <Header
+          style={{
+            padding: 0,
+            background: colorBgContainer,
+            position: "fixed",
+            left: collapsed ? 80 : 200,
+            right: 0,
+            top: 0,
+            height: 64,
+            zIndex: 50,
+            transition: "all 0.2s",
+          }}
+          className="flex justify-between shadow-md"
+        >
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -113,18 +150,28 @@ const Dashboard = () => {
               height: 64,
             }}
           />
+
           <span className="mr-4">
-            {user && (<span className="text-lg">Welcome , <span className="text-blue-500 font-bold">{user.data.name}</span>!</span>)}
+            {user && (
+              <span className="text-lg">
+                Welcome ,{" "}
+                <span className="text-blue-500 font-bold">
+                  {user.data.name}
+                </span>
+                !
+              </span>
+            )}
           </span>
         </Header>
 
+        {/* SCROLLABLE PAGE CONTENT */}
         <Content
           style={{
-            margin: "24px 16px",
             padding: 24,
-            minHeight: 280,
+            marginTop: 64,
+            height: "calc(100vh - 64px)",
+            overflowY: "auto",
             background: colorBgContainer,
-            borderRadius: borderRadiusLG,
           }}
         >
           <Outlet />
