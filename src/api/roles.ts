@@ -3,7 +3,7 @@ import http from "../utils/http";
 export const getRoles = (payload: {
   page: number;
   pageSize: number;
-  id: string;
+  id: number;
   name: string;
   description: string;
   createdAt: string;
@@ -13,11 +13,11 @@ export const getRoles = (payload: {
   );
 };
 
-export const getRoleById = (id: string) => {
+export const getRoleById = (id: number) => {
   return http.get(`/roles/${id}`);
 };
 
-export const deleteRoleById = (id: string) => {
+export const deleteRoleById = (id: number) => {
   return http.delete(`/roles/${id}`);
 };
 
@@ -26,7 +26,7 @@ export const createRole = (data: { name: string; description: string }) => {
 };
 
 export const updateRoleById = (
-  id: string,
+  id: number,
   data: { name: string; description: string }
 ) => {
   return http.put(`/roles/${id}`, data);

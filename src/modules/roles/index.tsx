@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getRoles } from "../../api/roles";
+import { getRoles ,deleteRoleById,createRole,updateRoleById } from "../../api/roles";
 import { Button, Table, Input, Col, Row, Modal, Form, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -40,7 +40,18 @@ const Role = () => {
   });
 
   if (error) return <div>Error occurred: {(error as Error).message}</div>;
-
+  const handleDelete = async (id: number) => {
+   Modal.confirm({
+    title: "Are you sure you want to delete this role?",
+    okText: "Yes",
+    okType: "danger",
+    onOk: async () => {
+      await deleteRoleById(id);
+      message.success("Role deleted");
+      refetch();
+    }
+  });
+ };
   const dataSource = data?.data?.data?.items || [];
 
   const columns = [
@@ -129,8 +140,8 @@ const Role = () => {
           />
 
           <DeleteTwoTone
-            twoToneColor="#FF4D4F"
-            onClick={() => navigate(`/dashboard/roles/delete/${record.id}`)}
+           twoToneColor="#FF4D4F"
+           onClick={() => handleDelete(record.id)}
           />
         </div>
       ),
@@ -146,14 +157,13 @@ const Role = () => {
   };
 
   // Submit (Create or Update)
-  const handleSubmit = async (values: any) => {
+const handleSubmit = async (values: any) => {
+  try {
     if (isEditMode) {
-      console.log("Updating role...", editingRole?.id, values);
-      // await updateRole(editingRole.id, values);
+      await updateRoleById(editingRole.id, values);
       message.success("Role updated successfully!");
     } else {
-      console.log("Creating role...", values);
-      // await createRole(values);
+      await createRole(values);
       message.success("Role created successfully!");
     }
 
@@ -163,7 +173,11 @@ const Role = () => {
     setEditingRole(null);
 
     refetch();
-  };
+  } catch (err) {
+    message.error("Something went wrong!");
+  }
+};
+
 
   return (
     <div>

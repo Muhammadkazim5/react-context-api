@@ -1,9 +1,10 @@
 import { useEffect } from "react";
-import { Form, Input, Button, Card, message, Row, Col } from "antd";
+import { Form, Input, Button, Card, message, Row, Col, Select } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createPost, updatePost, getPostById } from "../../../api/post";
 import type { IPost } from "../../../interfaces/post";
+import { getUsers } from "../../../api/users";
 
 
 const ModifyPost = () => {
@@ -19,13 +20,22 @@ const ModifyPost = () => {
     queryFn: () => getPostById(id),
     enabled: isEdit,
   });
+  // FETCH USERS FOR SELECT
+  const { data: usersData, isLoading: usersLoading } = useQuery({
+    queryKey: ["users"],
+    queryFn: () => getUsers({
+        page: 1,
+        pagesize: 100
+      })
+  });
+  // console.log('usersData',usersData)
 // console.log('edit values',postData)
   // SUBMIT HANDLERS
   const createMutation = useMutation({
     mutationFn: (data : IPost) => createPost(data),
     onSuccess: () => {
       message.success("Post created successfully");
-      navigate("/dashboard/posts");
+      navigate("/dashboard/post");
     },
   });
 
@@ -33,7 +43,7 @@ const ModifyPost = () => {
     mutationFn: (data: IPost) => updatePost(id, data),
     onSuccess: () => {
       message.success("Post updated successfully");
-      navigate("/dashboard/posts");
+      navigate("/dashboard/post");
     },
   });
 
@@ -44,7 +54,7 @@ const ModifyPost = () => {
       form.setFieldsValue({
         title: p.title,
         content: p.content,
-        user: p.user.name,
+         userId: p.user.id,
       });
     }
   }, [postData]);
@@ -78,15 +88,31 @@ const ModifyPost = () => {
       </Form.Item>
     </Col>
 
-    <Col span={12}>
-      <Form.Item
+    {/* <Col span={12}>
+      {/* <Form.Item
         label="User"
         name="user"
         rules={[{ required: true, message: "Enter username" }]}
       >
         <Input placeholder="Enter username" />
-      </Form.Item>
-    </Col>
+      </Form.Item> */}
+    {/* </Col> */}
+    <Col span={12}>
+              <Form.Item
+                label="User"
+                name="userId"
+                rules={[{ required: true, message: "Select a user" }]}
+              >
+                <Select placeholder="Select user" loading={usersLoading} allowClear>
+                  {/* Map users from API; make sure option value is the numeric id */}
+                  {usersData?.data?.result?.items?.map((u: any) => (
+                    <Select.Option key={u.id} value={u.id}>
+                      {u.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
   </Row>
 
   {/* ROW 2 (Content full width) */}
