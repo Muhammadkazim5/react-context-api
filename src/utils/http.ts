@@ -1,20 +1,20 @@
-import axios from 'axios'
+import axios from "axios";
 
 const http = axios.create({
-  // baseURL: 'http://localhost:3000',
-   baseURL: 'http://192.168.0.101:3005',
+  baseURL: "http://localhost:3005",
+  //  baseURL: 'http://192.168.0.101:3005',
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
-})
+});
 
 // Add accessToken to every request if available
 http.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken')
+  const token = localStorage.getItem("accessToken");
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+    config.headers.Authorization = `Bearer ${token}`;
   }
-  return config
-})
+  return config;
+});
 
-export default http
+export default http;

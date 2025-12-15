@@ -98,6 +98,12 @@ const Dashboard = () => {
                   label: "Post",
                   onClick: () => navigate("/dashboard/post"),
                 },
+                {
+                  key: "5",
+                  icon: <PlusOutlined />,
+                  label: "Crud",
+                  onClick: () => navigate("/dashboard/crud"),
+                },
               ]}
             />
           </div>

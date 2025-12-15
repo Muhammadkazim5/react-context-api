@@ -10,6 +10,7 @@ import ModifyPost from "./modules/post/modify/index";
 import ViewPost from "./modules/post/view";
 import ViewUser from "./modules/users/view/index";
 import ViewRole from "./modules/roles/view";
+import Crud from "./modules/crud";
 function App() {
   return (
     <BrowserRouter>
@@ -26,6 +27,7 @@ function App() {
           <Route path="post/create" element={<ModifyPost />} />
           <Route path="posts/edit/:id" element={<ModifyPost />} />
           <Route path="posts/view/:id" element={<ViewPost />} />
+          <Route path="crud" element={<Crud />} />
         </Route>
       </Routes>
     </BrowserRouter>

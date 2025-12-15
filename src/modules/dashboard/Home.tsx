@@ -23,16 +23,8 @@ const DashboardHome = () => {
   });
 
   const { data: rolesData, isLoading: rolesLoading } = useQuery({
-    queryKey: ["roles-stats"],
-    queryFn: () =>
-      getRoles({
-        page: 1,
-        pageSize: 10,
-        id: 0,
-        name: "",
-        description: "",
-        createdAt: "",
-      }),
+    queryKey: ["roles", page, pagesize],
+    queryFn: () => getRoles({ page, pagesize, id: 0, name: "", description: "", createdAt: "" }),
   });
 
   const totalUsers =
