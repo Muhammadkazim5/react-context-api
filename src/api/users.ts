@@ -3,8 +3,8 @@ import http from "../utils/http";
 export const getUsers = (payload: {
   page: number;
   pagesize: number;
-  id?: number;
-  name?: string;
+  id: number;
+  name: string;
 }) => {
   return http.get(`/user?page=${payload.page}&limit=${payload.pagesize}`);
 };

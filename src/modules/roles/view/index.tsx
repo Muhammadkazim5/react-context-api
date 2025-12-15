@@ -11,19 +11,20 @@
 
 // export default ViewRole
 
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Card, Typography, Tag } from "antd";
+import { Card, Typography, Button } from "antd";
 import { getRoleById } from "../../../api/roles";
 
 const { Title, Paragraph } = Typography;
 
 const ViewRole = () => {
   const { id } = useParams();
+  const navigete = useNavigate();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["role", id],
-    queryFn: () => getRoleById(id),
+    queryFn: () => getRoleById(Number(id)),
   });
 
   if (isLoading) return <p>Loading...</p>;
@@ -33,7 +34,7 @@ const ViewRole = () => {
 
   return (
     <div className="flex justify-center mt-10">
-      <Card title={`Role Details`} bordered className="w-full max-w-3xl shadow-md">
+      <Card title={`Role Details`} className="w-full max-w-3xl shadow-md">
         <Title level={3}>{role.name}</Title>
 
         <Paragraph>
@@ -45,10 +46,12 @@ const ViewRole = () => {
           <strong>Created At:</strong>{" "}
           {new Date(role.createdAt).toLocaleString()}
         </Paragraph>
+        <Button className="mt-6" onClick={() => navigete(-1)}>
+          Back
+        </Button>
       </Card>
     </div>
   );
 };
 
 export default ViewRole;
-

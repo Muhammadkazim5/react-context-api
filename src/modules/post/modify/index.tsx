@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { createPost, updatePost, getPostById } from "../../../api/post";
 import { getUsers } from "../../../api/users";
 import type { IPost } from "../../../interfaces/post";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 
 const ModifyPost = () => {
   const [form] = Form.useForm();
@@ -27,6 +28,8 @@ const ModifyPost = () => {
       getUsers({
         page: 1,
         pagesize: 100,
+        id: 0,
+        name: "",
       }),
   });
 
@@ -69,9 +72,16 @@ const ModifyPost = () => {
   };
 
   return (
-    <div className="flex justify-center">
-      <Card className="w-full max-w-5xl mt-8 shadow-md">
-        <h2 className="text-xl font-semibold mb-6">
+    <div className="flex justify-center ">
+      <Card className="w-full max-w-5xl mt-8 shadow-md" bordered>
+        <Button
+          type="link"
+          icon={<ArrowLeftOutlined />}
+          onClick={() => navigate(-1)}
+        >
+          Back
+        </Button>
+        <h2 className="text-xl font-semibold mb-6 mt-6">
           {isEdit ? "Edit Post" : "Create Post"}
         </h2>
 
@@ -120,13 +130,15 @@ const ModifyPost = () => {
             </Col>
           </Row>
 
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={createMutation.isPending || updateMutation.isPending}
-          >
-            {isEdit ? "Update Post" : "Create Post"}
-          </Button>
+          <div className="flex gap-3 mt-4">
+            <Button
+              htmlType="submit"
+              loading={createMutation.isPending || updateMutation.isPending}
+            >
+              {isEdit ? "Update Post" : "Create Post"}
+            </Button>
+            <Button onClick={() => navigate(-1)}>Cancel</Button>
+          </div>
         </Form>
       </Card>
     </div>
@@ -134,4 +146,3 @@ const ModifyPost = () => {
 };
 
 export default ModifyPost;
-
