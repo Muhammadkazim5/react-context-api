@@ -1,21 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, Col, Row, Spin, Statistic } from "antd";
-import { UserOutlined, TagsOutlined, FileTextOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  TagsOutlined,
+  FileTextOutlined,
+} from "@ant-design/icons";
 import { getUsers } from "../../api/users";
 import { getPosts } from "../../api/post";
 import { getRoles } from "../../api/roles";
 
-const DashboardHome = () => { 
+const DashboardHome = () => {
   const page: number = 1;
-  const pagesize : number = 10;
+  const pagesize: number = 10;
   const { data: usersData, isLoading: usersLoading } = useQuery({
-    queryKey: ["users",page, pagesize],
-    queryFn: () => getUsers({ page, pagesize}),
+    queryKey: ["users", page, pagesize],
+    queryFn: () => getUsers({ page, pagesize, id: 0, name: "" }),
   });
 
   const { data: postsData, isLoading: postsLoading } = useQuery({
-    queryKey: ["posts",page, pagesize],
-    queryFn: () => getPosts({ page, pagesize}),
+    queryKey: ["posts", page, pagesize],
+    queryFn: () => getPosts({ page, pagesize, id: 0, name: "" }),
   });
 
   const { data: rolesData, isLoading: rolesLoading } = useQuery({
@@ -24,16 +28,23 @@ const DashboardHome = () => {
       getRoles({
         page: 1,
         pageSize: 10,
-        id: "",
+        id: 0,
         name: "",
         description: "",
         createdAt: "",
       }),
   });
 
-  const totalUsers = usersData?.data?.result?.total ?? usersData?.data?.result?.items?.length ?? 0;
-  const totalPosts = postsData?.data?.result?.total ?? postsData?.data?.result?.items?.length ?? 0;
-  const totalRoles = rolesData?.data?.result?.total ?? rolesData?.data?.data?.items?.length ?? 0;
+  const totalUsers =
+    usersData?.data?.result?.total ??
+    usersData?.data?.result?.items?.length ??
+    0;
+  const totalPosts =
+    postsData?.data?.result?.total ??
+    postsData?.data?.result?.items?.length ??
+    0;
+  const totalRoles =
+    rolesData?.data?.result?.total ?? rolesData?.data?.data?.items?.length ?? 0;
 
   const isLoading = usersLoading || postsLoading || rolesLoading;
 
@@ -53,33 +64,56 @@ const DashboardHome = () => {
       ) : (
         <Row gutter={[24, 24]}>
           <Col xs={24} sm={12} lg={8}>
-            <Card style={{ ...cardStyle, borderLeft: "4px solid #1890ff" }} hoverable>
+            <Card
+              style={{ ...cardStyle, borderLeft: "4px solid #1890ff" }}
+              hoverable
+            >
               <Statistic
-                title={<span className="text-gray-600 text-base">Total Users</span>}
+                title={
+                  <span className="text-gray-600 text-base">Total Users</span>
+                }
                 value={totalUsers}
-                prefix={<UserOutlined style={{ color: "#1890ff", fontSize: 24 }} />}
+                prefix={
+                  <UserOutlined style={{ color: "#1890ff", fontSize: 24 }} />
+                }
                 valueStyle={{ color: "#1890ff", fontWeight: 600, fontSize: 32 }}
               />
             </Card>
           </Col>
 
           <Col xs={24} sm={12} lg={8}>
-            <Card style={{ ...cardStyle, borderLeft: "4px solid #52c41a" }} hoverable>
+            <Card
+              style={{ ...cardStyle, borderLeft: "4px solid #52c41a" }}
+              hoverable
+            >
               <Statistic
-                title={<span className="text-gray-600 text-base">Total Roles</span>}
+                title={
+                  <span className="text-gray-600 text-base">Total Roles</span>
+                }
                 value={totalRoles}
-                prefix={<TagsOutlined style={{ color: "#52c41a", fontSize: 24 }} />}
+                prefix={
+                  <TagsOutlined style={{ color: "#52c41a", fontSize: 24 }} />
+                }
                 valueStyle={{ color: "#52c41a", fontWeight: 600, fontSize: 32 }}
               />
             </Card>
           </Col>
 
           <Col xs={24} sm={12} lg={8}>
-            <Card style={{ ...cardStyle, borderLeft: "4px solid #722ed1" }} hoverable>
+            <Card
+              style={{ ...cardStyle, borderLeft: "4px solid #722ed1" }}
+              hoverable
+            >
               <Statistic
-                title={<span className="text-gray-600 text-base">Total Posts</span>}
+                title={
+                  <span className="text-gray-600 text-base">Total Posts</span>
+                }
                 value={totalPosts}
-                prefix={<FileTextOutlined style={{ color: "#722ed1", fontSize: 24 }} />}
+                prefix={
+                  <FileTextOutlined
+                    style={{ color: "#722ed1", fontSize: 24 }}
+                  />
+                }
                 valueStyle={{ color: "#722ed1", fontWeight: 600, fontSize: 32 }}
               />
             </Card>
@@ -91,4 +125,3 @@ const DashboardHome = () => {
 };
 
 export default DashboardHome;
-
