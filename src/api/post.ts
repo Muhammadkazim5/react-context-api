@@ -2,11 +2,10 @@ import http from "../utils/http";
 
 export const getPosts = (payload:{
   page: number;
-  name: string;
   pagesize: number;
+  name: string;
   id: number;
 }) => {
-
   return http.get(`/post?page=${payload?.page}&limit=${payload?.pagesize}`);}
 
   export const createPost = (payload : {

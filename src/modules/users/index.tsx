@@ -82,7 +82,7 @@ const User = () => {
       render: (image: string) =>
         image ? (
           <Image
-            src={`http://192.168.0.104:3000/${image}`}
+            src={`http://localhost:3000/${image}`}
             style={{ width: 50, height: 50, borderRadius: "50%" }}
           />
         ) : (

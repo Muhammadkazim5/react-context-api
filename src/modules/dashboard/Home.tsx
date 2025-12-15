@@ -5,15 +5,17 @@ import { getUsers } from "../../api/users";
 import { getPosts } from "../../api/post";
 import { getRoles } from "../../api/roles";
 
-const DashboardHome = () => {
+const DashboardHome = () => { 
+  const page: number = 1;
+  const pagesize : number = 10;
   const { data: usersData, isLoading: usersLoading } = useQuery({
-    queryKey: ["users"],
-    queryFn: () => getUsers(),
+    queryKey: ["users",page, pagesize],
+    queryFn: () => getUsers({ page, pagesize}),
   });
 
   const { data: postsData, isLoading: postsLoading } = useQuery({
-    queryKey: ["posts"],
-    queryFn: () => getPosts(),
+    queryKey: ["posts",page, pagesize],
+    queryFn: () => getPosts({ page, pagesize}),
   });
 
   const { data: rolesData, isLoading: rolesLoading } = useQuery({
