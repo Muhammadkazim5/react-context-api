@@ -8,6 +8,7 @@ import {
   UserOutlined,
   DashboardOutlined,
   VideoCameraOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
 
 import { useUser } from "../../hooks/useUser";
@@ -28,6 +29,7 @@ const Dashboard = () => {
     const p = location.pathname;
     if (p.startsWith("/dashboard/post")) return "3";
     if (p.startsWith("/dashboard/role")) return "2";
+    if (p.startsWith("/dashboard/audit")) return "6";
     if (p === "/dashboard" || p === "/dashboard/") return "0";
     if (p.startsWith("/dashboard/user")) return "1";
     return "";
@@ -112,6 +114,12 @@ const Dashboard = () => {
             theme="dark"
             mode="inline"
             items={[
+              {
+                key: "6",
+                icon: <HistoryOutlined />,
+                label: "Audit Logs",
+                onClick: () => navigate("/dashboard/audit"),
+              },
               {
                 key: "4",
                 icon: <UserOutlined />,
