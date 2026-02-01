@@ -23,7 +23,7 @@ const Login = () => {
     }
 
     return (
-        <div className="space-y-4" >
+        <div className="space-y-4 "  >
             <Form form={form} layout="vertical" onFinish={onFinish}>
                 <Form.Item label="Email" name="email">
                     <Input type="email" placeholder="Enter your email" prefix={<UserOutlined />} size="large"/>

@@ -16,8 +16,8 @@ const items = [
 const AuthLayout = () => {
   return (
     <div className="w-7xl mx-auto h-screen flex items-center justify-center " >
-      <div className="w-full max-w-md bg-blue-100 p-6 rounded-md shadow-md" >
-      <Tabs items={items}defaultActiveKey="login" centered  />
+      <div className="w-full max-w-md  border-indigo-500 bg-blue-300 p-6 rounded-md shadow-md" >
+      <Tabs items={items} defaultActiveKey="login" centered   />
       </div>
     </div>
   )
